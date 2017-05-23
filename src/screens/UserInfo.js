@@ -6,8 +6,8 @@ import {
   TouchableHighlight,
 } from 'react-native';
 import {
-  Button, List, ListItem,
-} from 'react-native-elements';
+  List, ListItem
+} from 'react-native-elements'
 import { auth, database } from '../firebase';
 
 export default class UserInfo extends Component {
@@ -25,10 +25,19 @@ export default class UserInfo extends Component {
     });
   }
   render() {
+    const { user } = this.state;
     return (
       <View style={styles.container}>
-        <View style={{flex: 1, marginTop: 10, paddingLeft: 10, paddingRight: 10}}>
-            <Text style={styles.titleText}>{this.state.user.email}</Text>
+        <View style={{flex: 1, marginTop: 10}}>
+          <Text style={styles.sectionHeader}>User Information</Text>
+          <List containerStyle={styles.section}>
+            <ListItem
+                title="Email"
+                rightTitle={user.email}
+                rightTitleStyle={{color: 'black'}}
+                hideChevron
+              />
+          </List>
         </View>
       </View>
     );
@@ -47,9 +56,9 @@ const styles = StyleSheet.create({
 		fontWeight: 'bold',
 		marginBottom: 20,
 	},
-	button: {
-      marginBottom: 10,
-	},
+	section: {
+    marginTop: 0,
+  },
   sectionHeader: {
     fontSize: 14,
     backgroundColor: 'black',

@@ -76,12 +76,8 @@ export default class EventIndex extends Component {
 		}
     if ( data.status !== 'passed') {
       navigateData.rightButtonTitle = 'Edit';
-      // navigateData.onRightButtonPress =  this._handleNavigationRequest();
     }
-    // this.props.navigator.toggleTabs({
-    //   to: 'hidden', // required, 'hidden' = hide tab bar, 'shown' = show tab bar
-    // });
-    this.props.navigator.push(navigateData);
+    this.props.changeScreen(navigateData);
   }
 
   render() {

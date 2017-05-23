@@ -22,6 +22,11 @@ export default class Main extends Component {
       selectedTab: 0,
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+    this.changeScreen = this.changeScreen.bind(this);
+  } 
+
+  changeScreen(screen) {
+    this.props.navigator.push(screen)
   }
   
   onNavigatorEvent(event) { // this is the onPress handler for the two buttons together
@@ -36,6 +41,8 @@ export default class Main extends Component {
         }
     }
   }
+
+
   render() {
     const { selectedTab } = this.state;
     return (
@@ -53,7 +60,7 @@ export default class Main extends Component {
                 selectedTab: 0,
               });
             }}>
-            <EventIndex />
+            <EventIndex changeScreen={this.changeScreen} />
           </TabBarIOS.Item>
           <TabBarIOS.Item
             title="Profile"

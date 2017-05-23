@@ -8,7 +8,7 @@ import {
   TouchableHighlight,
 } from 'react-native';
 import {
-  Button, List, ListItem, CheckBox,
+  List, ListItem
 } from 'react-native-elements'
 import moment from 'moment';
 import { database, auth } from '../firebase';
@@ -34,14 +34,17 @@ export default class CreateEvent extends Component {
     this.state = {
       title: '',
       description: '',
-      switchValue: false,
+      haveVote: false,
       showDate: false,
       date: new Date(),
+      finalDate: new Date(),
+      location: '',
+      showFinalDateSelect: false,
       timeZoneOffsetInHours: (-1) * (new Date()).getTimezoneOffset() / 60,
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
-    // this.itemsRef = database.ref().child('events');
-    this.onValueChange = this.onValueChange.bind(this);
+    this.onDateChange = this.onDateChange.bind(this);
+    this.onDateFinalChange = this.onDateFinalChange.bind(this);
   }
 
   onNavigatorEvent(event) { // this is the onPress handler for the two buttons together
@@ -52,75 +55,85 @@ export default class CreateEvent extends Component {
         });
       }
       if (event.id === 'next') {
+        const data = {
+          name: this.state.title,
+          description: this.state.description,
+          status: (this.state.haveVote ? 'pending' : 'current'),
+          closeDate: (this.state.haveVote ? this.state.date : 'None'),
+          users: {
+            [auth.currentUser.uid]: true,
+          }
+        };
+        if(!this.state.haveVote) {
+          data['finalLocation'] = this.state.location;
+          data['finalDate'] = this.state.finalDate;
+        }
         this.props.navigator.push({
           screen: 'example.InviteFriend',
           title: 'Invite Friends',
           passProps: {
-            data: {
-              name: this.state.title,
-              description: this.state.description,
-              status: 'pending',
-              users: {
-                [auth.currentUser.uid]: true,
-              }
-            }
+            data: data,
           }
         });
       }
     }
   }
 
-  onValueChange(value){
-    this.setState({switchValue: value});
-  }
-
   onSwitch(){
-    this.setState({switchValue: !this.state.switchValue });
+    this.setState({haveVote: !this.state.haveVote });
   }
 
   onDateChange = (date) => {
     this.setState({date: date});
   };
 
-  inviteFriend() {
-    this.props.navigator.showModal({
-        screen: 'example.InviteFriend',
-        title: 'Invite Friends',
-        passProps: {
-          data: {
-            name: this.state.title,
-            description: this.state.description,
-            status: 'pending',
-          }
-        }
-    });
-  }
-
-  setInvited(test) {
-    console.log(test);
-  }
+  onDateFinalChange = (date) => {
+    this.setState({finalDate: date});
+  };
 
   render() {
     const renderClosed = (show) => {
-      if (show) {
-        return (
-          <ListItem 
+      return show ?
+        <ListItem 
             rightTitle={moment(this.state.date).format('DD/MM/YYYY')}
-            title='Closed Date'
+            rightTitleStyle={{color: 'black'}}
+            title='Closed vote date'
             onPress={() => this.setState({showDate: !this.state.showDate})}
-            onBlur={() => this.setState({ showDate: false })}
             hideChevron
-          />);
-      }
+          /> :
+        [
+          <ListItem 
+            textInput
+            textInputOnChangeText={(text) => {this.setState({location: text});}}
+            textInputValue={this.state.location}
+            title='Location'
+            hideChevron
+          />,
+          <ListItem 
+            rightTitle={moment(this.state.finalDate).format('MMMM Do YYYY, h:mm a')}
+            rightTitleStyle={{color: 'black'}}
+            title='Date time'
+            onPress={() => this.setState({showFinalDateSelect: !this.state.showFinalDateSelect})}
+            hideChevron
+          />,
+          ( this.state.showFinalDateSelect ? 
+            <DatePickerIOS
+                date={this.state.finalDate}
+                mode="datetime"
+                timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
+                onDateChange={this.onDateFinalChange}
+            /> : <View />
+          )
+        ]
     }
 
-    const showDatePicker = this.state.showDate ? 
+    const showOptions = (this.state.showDate && this.state.haveVote ? 
       <DatePickerIOS
               date={this.state.date}
               mode="date"
               timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
               onDateChange={this.onDateChange}
-          /> : <View />
+          /> : <View />)
 
     return (
       <View style={styles.container}>
@@ -144,12 +157,12 @@ export default class CreateEvent extends Component {
             <ListItem
               title='Need vote'
               onSwitch={() => this.onSwitch()}
-              switched={this.state.switchValue}
+              switched={this.state.haveVote}
               switchButton={true}
               hideChevron
             /> 
-            { renderClosed(this.state.switchValue) }
-            {showDatePicker}
+            { renderClosed(this.state.haveVote) }
+            {showOptions}
           </List>
         </View>
       </View>

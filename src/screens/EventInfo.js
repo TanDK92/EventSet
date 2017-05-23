@@ -147,13 +147,6 @@ export default class EventInfo extends Component {
         </View>
 				<View style={{flex: 2}}>
 					<List containerStyle={{marginTop: 0}}>
-            {/*users.map((user) => {
-              return <ListItem
-                key={user.id}
-                title={user.email}
-								hideChevron
-							/>
-            })}*/}
             <ListItem 
               title="Member" 
               onPress={() => {this.toMember();} }/>
@@ -171,7 +164,7 @@ export default class EventInfo extends Component {
             <Text style={styles.sectionHeader}>Date</Text>
 						<List containerStyle={{marginTop: 0}}>
               <ListItem 
-                title={event.finalDate}
+                title={moment(event.finalDate).format('DD/MM/YYYY')}
                 hideChevron
               />
             </List>
