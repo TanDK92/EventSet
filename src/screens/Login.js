@@ -38,24 +38,19 @@ export default class Login extends Component {
   }
 
   async signup() {
-    const { email, password } = this.state;
-    try {
-      await auth.createUserWithEmailAndPassword(email, password).then((data) => {
-        const user = {
-          email: data.email
-        }
-        database.ref().child('users').child(data.uid).update(user);
-      });
-      console.log("Account create");
-    } catch (error) {
-      console.log(error.toString())
-    }
+    this.props.navigator.showModal({
+      screen: 'example.Signup',
+      title: 'Sign up',
+    });
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <View styke={{flex: 1}}>
+        <View style={{flex: 2}}>
+          <Text>EventSet</Text>
+        </View>
+        <View style={{flex: 1}}>
           <TextInput
             style={styles.input}
             onChangeText={(email) => this.setState({email})}
@@ -70,7 +65,7 @@ export default class Login extends Component {
             secureTextEntry
           />
         </View> 
-        <View>
+        <View style={{flex: 1}}>
           <Button
             onPress={this.signin}
             buttonStyle={styles.button}
