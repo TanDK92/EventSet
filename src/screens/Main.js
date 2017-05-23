@@ -23,10 +23,15 @@ export default class Main extends Component {
     }
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     this.changeScreen = this.changeScreen.bind(this);
+    this.toRoot = this.toRoot.bind(this);
   } 
 
   changeScreen(screen) {
     this.props.navigator.push(screen)
+  }
+
+  toRoot() {
+    this.props.navigator.popToRoot({animated: true })
   }
   
   onNavigatorEvent(event) { // this is the onPress handler for the two buttons together
@@ -60,7 +65,7 @@ export default class Main extends Component {
                 selectedTab: 0,
               });
             }}>
-            <EventIndex changeScreen={this.changeScreen} />
+            <EventIndex changeScreen={this.changeScreen}/>
           </TabBarIOS.Item>
           <TabBarIOS.Item
             title="Profile"
@@ -71,7 +76,7 @@ export default class Main extends Component {
                 selectedTab: 1,
               });
             }}>
-            <UserInfo />
+            <UserInfo toLogin={this.toRoot} />
           </TabBarIOS.Item>
         </TabBarIOS>
     );

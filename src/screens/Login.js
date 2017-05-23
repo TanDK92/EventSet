@@ -33,7 +33,7 @@ export default class Login extends Component {
 				backButtonHidden: true,
 		  });
     } catch (error) {
-        console.log(error.toString())
+      console.log(error.toString())
     }
   }
 

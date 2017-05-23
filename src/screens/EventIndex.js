@@ -10,6 +10,7 @@ import {
 import {
   List, ListItem, ButtonGroup
 } from 'react-native-elements'
+import moment from 'moment';
 import { database, auth } from '../firebase';
 
 export default class EventIndex extends Component {
@@ -107,6 +108,11 @@ export default class EventIndex extends Component {
                   title={l.name}
                   subtitle={l.description}
                   onPress={() => { this.onSelectEvent(l)} }
+                  rightTitle={l.status !== 'pending' ? 
+                    moment(l.finalDate).format('DD/MM/YY') : 
+                    moment(l.closeDate).format('DD/MM/YY')
+                  }
+                  rightTitleStyle={{color: 'black'}}
                   hideChevron
                 />
               ))
