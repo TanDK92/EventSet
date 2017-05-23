@@ -123,7 +123,7 @@ export default class EventInfo extends Component {
     const { users } = this.state;
     
     const votedSection = () => {
-      return (<View style={{flex: 1}}>
+      return (<View style={{flex: 3}}>
           <Button
             style={styles.button}
             title={'Vote location and date'}
@@ -149,7 +149,7 @@ export default class EventInfo extends Component {
 				<View style={{flex: 1}}>
 					<List containerStyle={{marginTop: 0}}>
             <ListItem 
-              title="Member" 
+              title="Members" 
               onPress={() => {this.toMember();} }/>
           </List>
 				</View>

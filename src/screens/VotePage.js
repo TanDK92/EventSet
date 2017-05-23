@@ -82,40 +82,30 @@ export default class VotePage extends Component {
   }
 
   addLocation() {
-    AlertIOS.prompt(
-      'Add New Location',
-      null,
-      [
-        {
-          text: 'Cancel',
-          style: 'destructive',
-        },
-        {
-          text: 'Add',
-          onPress: (text) => {
-            this.newLocation(text);
-          }
-        },
-      ],
-      'plain-text'
-    );
+    this.props.navigator.showModal({
+      screen: "example.AddLocation",
+      title: "Add location",
+      passProps: {
+        submit: this.newLocation,
+      }, 
+      animationType: 'slide-up'
+    });
   }
 
   addDate() {
     this.props.navigator.showModal({
-      screen: "example.AddDatetime", // unique ID registered with Navigation.registerScreen
+      screen: "example.AddDatetime",
       title: "Add datetime",
       passProps: {
         submit: this.newDate,
       }, 
       animationType: 'slide-up'
-    })
+    });
   }
 
   newLocation(locationName) {
     const locationRef = this.eventRef.child('locations');
     const data = {
-      score: 0,
       name: locationName
     };
     const newKey = locationRef.push().key;
@@ -126,7 +116,6 @@ export default class VotePage extends Component {
   }
 
   newDate(dateTime) {
-    console.log(this.eventRef);
     const dateRef = this.eventRef.child('dates');
     const data = {
       name: dateTime

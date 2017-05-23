@@ -129,11 +129,11 @@ export default class CreateEvent extends Component {
 
     const showOptions = (this.state.showDate && this.state.haveVote ? 
       <DatePickerIOS
-              date={this.state.date}
-              mode="date"
-              timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
-              onDateChange={this.onDateChange}
-          /> : <View />)
+          date={this.state.date}
+          mode="date"
+          timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
+          onDateChange={this.onDateChange}
+      /> : <View />)
 
     return (
       <View style={styles.container}>

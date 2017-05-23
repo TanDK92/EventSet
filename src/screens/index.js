@@ -9,6 +9,7 @@ import CreateEvent from './CreateEvent';
 import InviteFriend from './InviteFriend';
 import MemberList from './MemberList';
 import AddDatetime from './AddDatetime';
+import AddLocation from './AddLocation';
 
 export default function () {
     Navigation.registerComponent('example.Login', () => Login);
@@ -19,5 +20,5 @@ export default function () {
     Navigation.registerComponent('example.VoteResult', () => VoteResult);
     Navigation.registerComponent('example.InviteFriend', () => InviteFriend);
     Navigation.registerComponent('example.MemberList', () => MemberList);
-    Navigation.registerComponent('example.AddDatetime', () => AddDatetime);
+    Navigation.registerComponent('example.AddLocation', () => AddLocation);
 };
