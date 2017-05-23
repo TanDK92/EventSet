@@ -21,9 +21,26 @@ export default class EventInfo extends Component {
       showDate: false,
       date: new Date(),
       timeZoneOffsetInHours: (-1) * (new Date()).getTimezoneOffset() / 60,
-      alreadyVote: (props.event.voted ? props.event.voted.includes(auth.currentUser.uid) : false),
+      users: [],
     };
     this.onValueChange = this.onValueChange.bind(this);
+    this.toMember = this.toMember.bind(this);
+  }
+
+  componentWillMount() {
+    const userIds = this.props.event.users;
+    const usersFire = database.ref().child('users');
+    usersFire.on('value', (snap) => {
+      const items = [];
+      snap.forEach((child) => {
+        if(userIds[child.key]) {
+          const user = child.val();
+          user['id'] = child.key;
+          items.push(user);
+        }
+      });
+      this.setState({ users: items });
+    });
   }
 	
   onValueChange(value){
@@ -92,8 +109,19 @@ export default class EventInfo extends Component {
     this.props.navigator.pop();
   }
 
+  toMember() {
+    this.props.navigator.push({
+      screen: 'example.MemberList',
+      passProps: {
+        members: this.state.users,
+      }
+    })
+  }
+
   render() {
     const { event } = this.props;
+    const { users } = this.state;
+    console.log(users);
     const votedSection = () => {
       return (<View style={{flex: 1}}>
           <Button
@@ -118,12 +146,17 @@ export default class EventInfo extends Component {
 						</Text>
         </View>
 				<View style={{flex: 2}}>
-          <Text style={styles.sectionHeader}>People</Text>
 					<List containerStyle={{marginTop: 0}}>
-            <ListItem
-              title='Friend A'
-              hideChevron
-            />
+            {/*users.map((user) => {
+              return <ListItem
+                key={user.id}
+                title={user.email}
+								hideChevron
+							/>
+            })}*/}
+            <ListItem 
+              title="Member" 
+              onPress={() => {this.toMember();} }/>
           </List>
 				</View>
 				{ event.status !== 'pending' ?

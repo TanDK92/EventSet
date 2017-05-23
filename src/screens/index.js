@@ -19,6 +19,7 @@ import VotePage from './VotePage';
 import VoteResult from './VoteResult';
 import CreateEvent from './CreateEvent';
 import InviteFriend from './InviteFriend';
+import MemberList from './MemberList';
 
 export default function () {
     Navigation.registerComponent('example.Types', () => Types);
@@ -30,6 +31,7 @@ export default function () {
     Navigation.registerComponent('example.VotePage', () => VotePage);
     Navigation.registerComponent('example.VoteResult', () => VoteResult);
     Navigation.registerComponent('example.InviteFriend', () => InviteFriend);
+    Navigation.registerComponent('example.MemberList', () => MemberList);
 
     Navigation.registerComponent('example.Types.Push', () => Push);
     Navigation.registerComponent('example.Types.Drawer', () => Drawer);

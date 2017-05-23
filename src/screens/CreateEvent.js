@@ -60,6 +60,9 @@ export default class CreateEvent extends Component {
               name: this.state.title,
               description: this.state.description,
               status: 'pending',
+              users: {
+                [auth.currentUser.uid]: true,
+              }
             }
           }
         });

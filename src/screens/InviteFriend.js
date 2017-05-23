@@ -58,9 +58,6 @@ export default class InviteFriend extends Component {
   create(){
     const uid = auth.currentUser.uid;
     const data = this.props.data
-    data['users'] = {
-      [uid]: true,
-    }
     const newKey = database.ref().child('events').push().key;
     let updates = {};
     updates['/events/' + newKey] = data;
