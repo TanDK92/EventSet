@@ -5,6 +5,7 @@ import {
   View,
   TextInput,
   ListView,
+  ScrollView,
 } from 'react-native';
 import {
   List, ListItem, ButtonGroup
@@ -96,7 +97,7 @@ export default class EventIndex extends Component {
           containerStyle={{height: 25}}
           />
         </View>
-        <View style={{width: '100%'}}>
+        <ScrollView style={{width: '100%'}}>
           <Text style={styles.sectionHeader}>Test</Text>
           <List containerStyle={styles.section}>
             {
@@ -111,7 +112,7 @@ export default class EventIndex extends Component {
               ))
             }
           </List>
-        </View>
+        </ScrollView>
       </View>
     );
   }

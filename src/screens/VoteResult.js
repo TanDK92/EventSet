@@ -3,10 +3,7 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableHighlight,
-  Button,
-  TextInput,
-  AlertIOS,
+  ScrollView,
 } from 'react-native';
 import {
   List, ListItem, Badge,
@@ -17,38 +14,70 @@ import { database } from '../firebase';
 export default class VoteResult extends Component {
   constructor(props) {
     super(props);
-    this.itemsRef = database.ref().child('events').child(this.props.event.key);
+    this.state = {
+      locations: [],
+      dates: [],
+    }
+    this.eventRef = database.ref().child('events').child(this.props.event.key);
+  }
+
+  componentDidMount() {
+    this.eventRef.child('locations').on('value', (snap) => {
+      const locations = [];
+      snap.forEach((child) => {
+        const location = child.val();
+        location['id'] = child.key;
+        locations.push(location);
+      });
+      this.setState({ locations: locations });
+    });
+
+    this.eventRef.child('dates').on('value', (snap) => {
+      const dates = [];
+      snap.forEach((child) => {
+        const date = child.val();
+        date['id'] = child.key;
+        dates.push(date);
+      });
+      this.setState({ dates: dates });
+    });
   }
 
   render() {
-    const { event } = this.props;
+    const { locations, dates } = this.state;
     return (
       <View style={styles.container}>
-        <View style={{flex: 1, paddingTop: 60}}>
+        <View style={{flex: 1}}>
           <Text style={styles.sectionHeader}>Location</Text>
-          { event.locations ? event.locations.map((lo) => {
-            return (
-              <ListItem
-                key={event.locations.indexOf(lo)}
-                title={lo.name}
-                badge={{ value: lo.score, badgeTextStyle: { color: 'orange' }}}
-                hideChevron
-              />
-            );
-          }) : <View />}
+          <ScrollView>
+            { locations.map((lo) => {
+              const score = lo.voter ? lo.voter.length : 0;
+              return (
+                <ListItem
+                  key={lo.id}
+                  title={lo.name}
+                  badge={{ value: score, badgeTextStyle: { color: 'orange' }}}
+                  hideChevron
+                />
+              );
+            })}
+          </ScrollView>
         </View>
         <View style={{flex: 1}}>
           <Text style={styles.sectionHeader}>Dates</Text>
-          { event.dates ? event.dates.map((date) => {
-            return (
-              <ListItem
-                key={event.locations.indexOf(date)}
-                title={date.name}
-                badge={{ value: date.score, badgeTextStyle: { color: 'orange' }}}
-                hideChevron
-              />
-            );
-          }) : <View />}
+          <ScrollView>
+            { dates.map((date) => {
+              const score = date.voter ? date.voter.length : 0;
+              return (
+                <ListItem
+                  key={date.id}
+                  title={moment(date.name).format('MMMM Do YYYY, h:mm a')}
+                  badge={{ value: score, badgeTextStyle: { color: 'orange' }}}
+                  hideChevron
+                />
+              );
+            })}
+          </ScrollView>
         </View>
       </View>
     );

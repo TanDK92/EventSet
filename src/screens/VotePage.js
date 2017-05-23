@@ -7,12 +7,12 @@ import {
   Button,
   TextInput,
   AlertIOS,
+  ScrollView,
 } from 'react-native';
 import {
   CheckBox,
 } from 'react-native-elements';
 import moment from 'moment';
-// import SelectFriends from './SelectFriends';
 import { database, auth } from '../firebase';
 
 export default class VotePage extends Component {
@@ -28,6 +28,7 @@ export default class VotePage extends Component {
     this.onCheckLocations = this.onCheckLocations.bind(this);
     this.onCheckDates = this.onCheckDates.bind(this);
     this.newLocation = this.newLocation.bind(this);
+    this.newDate = this.newDate.bind(this);
   }
 
   componentDidMount() {
@@ -87,7 +88,7 @@ export default class VotePage extends Component {
       [
         {
           text: 'Cancel',
-          style: 'cancel',
+          style: 'destructive',
         },
         {
           text: 'Add',
@@ -101,23 +102,14 @@ export default class VotePage extends Component {
   }
 
   addDate() {
-    AlertIOS.prompt(
-      'Add New Date',
-      null,
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Add',
-          onPress: (text) => {
-            this.newDate(text);
-          }
-        },
-      ],
-      'plain-text'
-    );
+    this.props.navigator.showModal({
+      screen: "example.AddDatetime", // unique ID registered with Navigation.registerScreen
+      title: "Add datetime",
+      passProps: {
+        submit: this.newDate,
+      }, 
+      animationType: 'slide-up'
+    })
   }
 
   newLocation(locationName) {
@@ -134,6 +126,7 @@ export default class VotePage extends Component {
   }
 
   newDate(dateTime) {
+    console.log(this.eventRef);
     const dateRef = this.eventRef.child('dates');
     const data = {
       name: dateTime
@@ -152,31 +145,35 @@ export default class VotePage extends Component {
       <View style={styles.container}>
         <View style={{flex: 1}}>
           <Text style={styles.sectionHeader}>Location</Text>
-          { locations.map((lo) => {
-            return (
-              <CheckBox
-                key={lo.id}
-                title={lo.name}
-                checked={lo.voter && lo.voter.includes(auth.currentUser.uid)}
-                onPress={() => {this.onCheckLocations(lo.id)}}
-              />
-            );
-          })}
-          <Button title="Add location" onPress={() => {this.addLocation();}} />
+          <ScrollView>
+            { locations.map((lo) => {
+              return (
+                <CheckBox
+                  key={lo.id}
+                  title={lo.name}
+                  checked={lo.voter && lo.voter.includes(auth.currentUser.uid)}
+                  onPress={() => {this.onCheckLocations(lo.id)}}
+                />
+              );
+            })}
+            <Button title="Add location" onPress={() => {this.addLocation();}} />
+          </ScrollView>
         </View>
         <View style={{flex: 1}}>
           <Text style={styles.sectionHeader}>Dates</Text>
-          { dates.map((date) => {
-            return (
-              <CheckBox
-                key={date.id}
-                title={date.name}
-                checked={date.voter && date.voter.includes(auth.currentUser.uid)}
-                onPress={() => {this.onCheckDates(date.id)}}
-              />
-            );
-          })}
+          <ScrollView>
+            { dates.map((date) => {
+              return (
+                <CheckBox
+                  key={date.id}
+                  title={moment(date.name).format('MMMM Do YYYY, h:mm a')}
+                  checked={date.voter && date.voter.includes(auth.currentUser.uid)}
+                  onPress={() => {this.onCheckDates(date.id)}}
+                />
+              );
+            })}
           <Button title="Add datetime" onPress={() => {this.addDate();}} />
+          </ScrollView>
         </View>
       </View>
     );

@@ -121,16 +121,17 @@ export default class EventInfo extends Component {
   render() {
     const { event } = this.props;
     const { users } = this.state;
-    console.log(users);
+    
     const votedSection = () => {
       return (<View style={{flex: 1}}>
           <Button
             style={styles.button}
-            title={event.status !== 'pending' ? 'See vote result' : 'Vote location and date'}
-            onPress={() => {event.status !== 'pending' ? this.seeVote() : this.onVoteButton()}} 
+            title={'Vote location and date'}
+            onPress={() => {this.onVoteButton()}} 
           />
           {event.status === 'pending' ? 
             <Button
+              style={styles.button}
               title="Close vote"
               onPress={() => {this.closeVote();}} 
             /> : null
@@ -145,7 +146,7 @@ export default class EventInfo extends Component {
 							{event.description}
 						</Text>
         </View>
-				<View style={{flex: 2}}>
+				<View style={{flex: 1}}>
 					<List containerStyle={{marginTop: 0}}>
             <ListItem 
               title="Member" 
@@ -153,7 +154,7 @@ export default class EventInfo extends Component {
           </List>
 				</View>
 				{ event.status !== 'pending' ?
-				<View style={{flex: 2}}>
+				<View style={{flex: 3}}>
             <Text style={styles.sectionHeader}>Location</Text>
 						<List containerStyle={{marginTop: 0}}>
 							<ListItem
@@ -164,10 +165,15 @@ export default class EventInfo extends Component {
             <Text style={styles.sectionHeader}>Date</Text>
 						<List containerStyle={{marginTop: 0}}>
               <ListItem 
-                title={moment(event.finalDate).format('DD/MM/YYYY')}
+                title={moment(event.finalDate).format('MMMM Do YYYY, h:mm a')}
                 hideChevron
               />
             </List>
+            <Button
+              style={styles.button}
+              title="See vote result"
+              onPress={() => {this.seeVote();}} 
+            />
 					</View> : 
           votedSection()
 				}
@@ -189,7 +195,7 @@ const styles = StyleSheet.create({
 		marginBottom: 20,
 	},
 	button: {
-      marginBottom: 10,
+      marginTop: 10,
 	},
   sectionHeader: {
     fontSize: 14,
