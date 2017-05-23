@@ -12,24 +12,13 @@ import {
 import { database, auth } from '../firebase';
 
 export default class EventIndex extends Component {
-   static navigatorButtons = {
-    rightButtons: [
-      {
-        title: 'New', // for a textual button, provide the button title (label)
-        id: 'new', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
-      },
-    ]
-  };
-
   constructor(props) {
     super(props)
     this.state = {
       selectedIndex: 1,
       events: [],
     }
-    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     this.itemsRef = database.ref().child('events');
-    // this.updateIndex = this.updateIndex.bind(this);
   }
 
    onNavigatorEvent(event) { // this is the onPress handler for the two buttons together

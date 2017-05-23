@@ -20,15 +20,7 @@ export default class Login extends Component {
       password: '',
     };
 	  this.signin = this.signin.bind(this);
-    this._handleNavigationRequest = this._handleNavigationRequest.bind(this);
     this.signup = this.signup.bind(this);
-  }
-
-  _handleNavigationRequest() {
-    this.props.navigator.push({
-      title: 'New Event',
-      component: CreateEvent,
-    })
   }
 
   async signin() {
@@ -37,7 +29,7 @@ export default class Login extends Component {
       await auth.signInWithEmailAndPassword(email, password);
       this.props.navigator.push({
 				title: 'Events',
-				screen: 'example.EventIndex',
+				screen: 'example.Main',
 				backButtonHidden: true,
 		  });
     } catch (error) {

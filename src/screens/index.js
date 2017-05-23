@@ -13,7 +13,7 @@ import TabOne from './types/tabs/TabOne';
 import TabTwo from './types/tabs/TabTwo';
 
 import Login from './Login';
-import EventIndex from './EventIndex';
+import Main from './Main';
 import EventInfo from './EventInfo';
 import VotePage from './VotePage';
 import VoteResult from './VoteResult';
@@ -26,7 +26,7 @@ export default function () {
     Navigation.registerComponent('example.Actions', () => Actions);
     Navigation.registerComponent('example.Login', () => Login);
     Navigation.registerComponent('example.CreateEvent', () => CreateEvent);
-    Navigation.registerComponent('example.EventIndex', () => EventIndex);
+    Navigation.registerComponent('example.Main', () => Main);
     Navigation.registerComponent('example.EventInfo', () => EventInfo);
     Navigation.registerComponent('example.VotePage', () => VotePage);
     Navigation.registerComponent('example.VoteResult', () => VoteResult);
