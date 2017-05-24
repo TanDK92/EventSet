@@ -6,10 +6,12 @@ import {
   TextInput,
   ListView,
   ScrollView,
+  AlertIOS,
 } from 'react-native';
 import {
   List, ListItem, ButtonGroup
 } from 'react-native-elements'
+import Swipeout from 'react-native-swipeout';
 import moment from 'moment';
 import { database, auth } from '../firebase';
 
@@ -46,7 +48,9 @@ export default class EventIndex extends Component {
     eventPermission.on('value', (snap) => {
       eIds = [];
       snap.forEach((child) => {
-        eIds.push(child.key);
+        if(child.val()){
+          eIds.push(child.key);
+        }
       });
     });
     const eventsFire = database.ref().child('events');
@@ -81,11 +85,45 @@ export default class EventIndex extends Component {
     this.props.changeScreen(navigateData);
   }
 
+  removeEvent(id){
+    const eventPermissionRef = database.ref().child('users').child(auth.currentUser.uid).child('events');
+    AlertIOS.alert(
+      'Delete event',
+      'Are you sure to delete event?',
+      [
+        {text: 'No'},
+        {
+          text: 'Yes', style: 'destructive', 
+          onPress: () => {
+            eventPermissionRef.update({ [id]: false,});
+            const events = this.state.events;
+            const index = events.map((e) => e.key).indexOf(id);
+            events.splice(index, 1);
+            this.setState({ events: events });
+          } 
+        },
+      ],
+    );
+  }
+
   render() {
     const { selectedIndex, events } = this.state;
     const buttons = ['Current Events', 'Pending Events', 'Passed Events'];
     const checker = ['current', 'pending', 'passed'];
-    
+    const listItem = (l, i) => {
+      return <ListItem
+        key={i}
+        title={l.name}
+        subtitle={l.description}
+        onPress={() => { this.onSelectEvent(l)} }
+        rightTitle={l.status !== 'pending' ? 
+          moment(l.finalDate).format('DD/MM/YY') : 
+          moment(l.closeDate).format('DD/MM/YY')
+        }
+        rightTitleStyle={{color: 'black'}}
+        hideChevron
+      />
+    }
     return (
       <View style={styles.container}>
         <View style={{width: '100%'}}>
@@ -101,20 +139,20 @@ export default class EventIndex extends Component {
           <Text style={styles.sectionHeader}>Test</Text>
           <List containerStyle={styles.section}>
             {
-              events.filter((event) => { return event.status === checker[selectedIndex]}).map((l, i) => (
-                <ListItem
-                  key={i}
-                  title={l.name}
-                  subtitle={l.description}
-                  onPress={() => { this.onSelectEvent(l)} }
-                  rightTitle={l.status !== 'pending' ? 
-                    moment(l.finalDate).format('DD/MM/YY') : 
-                    moment(l.closeDate).format('DD/MM/YY')
+              events.filter((event) => { return event.status === checker[selectedIndex]}).map((l) => {
+                const swipeoutBtns = [
+                  {
+                    text: 'Delete',
+                    onPress: () => { this.removeEvent(l.key); },
+                    backgroundColor: 'red',
                   }
-                  rightTitleStyle={{color: 'black'}}
-                  hideChevron
-                />
-              ))
+                ];
+                return l.status === 'passed' ?
+                <Swipeout key={l.key} right={swipeoutBtns} backgroundColor="transparent">
+                  {listItem(l, l.key)}
+                </Swipeout> :
+                listItem(l, l.key)
+              })
             }
           </List>
         </ScrollView>

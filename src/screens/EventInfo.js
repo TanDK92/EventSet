@@ -31,17 +31,18 @@ export default class EventInfo extends Component {
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     this.onValueChange = this.onValueChange.bind(this);
     this.toMember = this.toMember.bind(this);
+    this.setPassed = this.setPassed.bind(this);
+    this.eventRef = database.ref().child('events').child(this.props.event.key);
+    this.usersRef = database.ref().child('users');
   }
 
   componentWillMount() {
-    const eventRef = database.ref().child('events').child(this.props.event.key);
-    eventRef.on('value', (snap) => {
+    this.eventRef.on('value', (snap) => {
       this.setState({ event: snap.val() });
     });
 
     const userIds = this.props.event.users;
-    const usersFire = database.ref().child('users');
-    usersFire.on('value', (snap) => {
+    this.usersRef.on('value', (snap) => {
       const items = [];
       snap.forEach((child) => {
         if(userIds[child.key]) {
@@ -52,6 +53,11 @@ export default class EventInfo extends Component {
       });
       this.setState({ users: items });
     });
+  }
+
+  componentWillUnmount() {
+    this.eventRef.off();
+    this.usersRef.off();
   }
 
   onNavigatorEvent(event) {
@@ -132,6 +138,16 @@ export default class EventInfo extends Component {
     this.props.navigator.pop();
   }
 
+  setPassed(){
+     database.ref().child('events').child(this.props.event.key).update({
+      status: 'passed',
+    }).then(() => {
+      this.props.navigator.pop({
+        animated: true 
+      })
+    });
+  }
+
   toMember() {
     this.props.navigator.push({
       screen: 'example.MemberList',
@@ -197,6 +213,13 @@ export default class EventInfo extends Component {
               title="See vote result"
               onPress={() => {this.seeVote();}} 
             />
+            { event.status === 'current' ? 
+              <Button
+                style={styles.button}
+                title="Passed event"
+                onPress={() => {this.setPassed();}} 
+              /> : null
+            }
 					</View> : 
           votedSection()
 				}
