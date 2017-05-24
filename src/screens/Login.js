@@ -48,7 +48,7 @@ export default class Login extends Component {
     return (
       <View style={styles.container}>
         <View style={{flex: 2}}>
-          <Text>EventSet</Text>
+          <Text style={styles.logoText} >EventSet</Text>
         </View>
         <View style={{flex: 1}}>
           <TextInput
@@ -94,6 +94,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F5FCFF',
     justifyContent: 'center',
+  },
+  logoText: {
+    fontSize: 50,
+    fontWeight: '500',
+    textAlign: 'center',
+    marginTop: '30%', 
   },
   input: {
     height: 40, 

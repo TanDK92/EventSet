@@ -19,6 +19,26 @@ export default class MemberList extends Component {
     ]
   };
 
+  constructor(props){
+    super(props);
+    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+  }
+  
+  onNavigatorEvent(event) {
+    if (event.type === 'NavBarButtonPress') {
+      if (event.id === 'invite') { 
+        this.props.navigator.showModal({
+          screen: 'example.AddMoreFriends',
+          title: 'Add Friends',
+          passProps: {
+            oldMember: this.props.members,
+            eventId: this.props.eventId,
+          }
+        })
+      }
+    }
+  }
+
   render() {
     const { members } = this.props;
     return (

@@ -12,22 +12,33 @@ import moment from 'moment';
 import { auth, database } from '../firebase';
 
 export default class EventInfo extends Component {
+  static navigatorButtons = (this.status === 'current' ? {
+    rightButtons: [
+      {
+        title: 'Passed',
+        id: 'passed',
+      }
+    ]
+  } : null);
+
   constructor(props) {
     super(props);
     this.state = {
-      title: '',
-      description: '',
-      switchValue: false,
-      showDate: false,
-      date: new Date(),
-      timeZoneOffsetInHours: (-1) * (new Date()).getTimezoneOffset() / 60,
+      event: {},
       users: [],
     };
+    this.status = this.props.event.status;
+    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     this.onValueChange = this.onValueChange.bind(this);
     this.toMember = this.toMember.bind(this);
   }
 
   componentWillMount() {
+    const eventRef = database.ref().child('events').child(this.props.event.key);
+    eventRef.on('value', (snap) => {
+      this.setState({ event: snap.val() });
+    });
+
     const userIds = this.props.event.users;
     const usersFire = database.ref().child('users');
     usersFire.on('value', (snap) => {
@@ -41,6 +52,19 @@ export default class EventInfo extends Component {
       });
       this.setState({ users: items });
     });
+  }
+
+  onNavigatorEvent(event) {
+    if (event.type === 'NavBarButtonPress') {
+      if (event.id === 'passed') { 
+        database.ref().child('events').child(this.props.event.key).update({
+          status: 'passed',
+        });
+        this.props.navigator.dismissModal({
+          animationType: 'slide-down'
+        });
+      }
+    }
   }
 	
   onValueChange(value){
@@ -72,7 +96,7 @@ export default class EventInfo extends Component {
   }
 
   closeVote() {
-    const { event } = this.props;
+    const { event } = this.state;
     const locations = event.locations;
     let finalLocation = 'None';
     let maxScoreLocation = 0;
@@ -100,8 +124,7 @@ export default class EventInfo extends Component {
         }
       }
     }
-    
-    database.ref().child('events').child(event.key).update({
+    database.ref().child('events').child(this.props.event.key).update({
       status: 'current',
       finalLocation: finalLocation,
       finalDate: finalDate,
@@ -114,13 +137,13 @@ export default class EventInfo extends Component {
       screen: 'example.MemberList',
       passProps: {
         members: this.state.users,
+        eventId: this.props.event.key,
       }
     })
   }
 
   render() {
-    const { event } = this.props;
-    const { users } = this.state;
+    const { users, event } = this.state;
     
     const votedSection = () => {
       return (<View style={{flex: 3}}>

@@ -103,6 +103,7 @@ export default class CreateEvent extends Component {
           /> :
         [
           <ListItem 
+            key={0}
             textInput
             textInputOnChangeText={(text) => {this.setState({location: text});}}
             textInputValue={this.state.location}
@@ -110,6 +111,7 @@ export default class CreateEvent extends Component {
             hideChevron
           />,
           <ListItem 
+            key={1}
             rightTitle={moment(this.state.finalDate).format('MMMM Do YYYY, h:mm a')}
             rightTitleStyle={{color: 'black'}}
             title='Date time'

@@ -10,12 +10,18 @@ import {
 } from 'react-native-elements';
 import { auth, database } from '../firebase';
 
-export default class InviteFriend extends Component {
+export default class AddMoreFriends extends Component {
   static navigatorButtons = {
     rightButtons: [
       {
-        title: 'Done', // for a textual button, provide the button title (label)
-        id: 'done', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+        title: 'Add', // for a textual button, provide the button title (label)
+        id: 'add', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+      },
+    ],
+    leftButtons: [
+      {
+        title: 'Cancel', // for a textual button, provide the button title (label)
+        id: 'cancel', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
       },
     ]
   };
@@ -29,7 +35,7 @@ export default class InviteFriend extends Component {
     this.onValueChange = this.onValueChange.bind(this);
     this.onSelect = this.onSelect.bind(this);
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
-    this.create = this.create.bind(this);
+    this.add = this.add.bind(this);
     this.usersRef = database.ref().child('users');
   }
 
@@ -37,7 +43,7 @@ export default class InviteFriend extends Component {
     this.usersRef.on('value', (snap) => {
       const users = [];
       snap.forEach((child) => {
-        if(auth.currentUser.uid !== child.key) {
+        if(!this.props.oldMember.map((mem) => {return mem.id;}).includes(child.key)) {
           const user = child.val();
           user['id'] = child.key;
           users.push(user);
@@ -53,32 +59,29 @@ export default class InviteFriend extends Component {
 
   onNavigatorEvent(event) { // this is the onPress handler for the two buttons together
     if (event.type === 'NavBarButtonPress') { // this is the event type for button presses
-      if (event.id === 'done') { 
-        this.create();
+      if (event.id === 'add') { 
+        this.add();
+      }
+      if (event.id === 'cancel') { 
+        this.props.navigator.dismissModal({
+          animationType: 'slide-down'
+        });
       }
     }
   }
 
-  create(){
-    const uid = auth.currentUser.uid;
-    const data = this.props.data
-    const newKey = database.ref().child('events').push().key;
-    let updates = {};
-    updates['/events/' + newKey] = data;
-    updates['/users/' + uid + '/events/' + newKey] = true;
-    database.ref().update(updates).then(() => {
-      if(this.state.selectedId.length > 0){
-        this.state.selectedId.forEach((id) => {
-        let up = {};
-        up['/events/' + newKey + '/users/' + id] = true;
-        up['/users/' + id + '/events/' + newKey] = true;
-        database.ref().update(up);
+  add(){
+    const { eventId } = this.props;
+    if(this.state.selectedId.length > 0){
+      this.state.selectedId.forEach((id) => {
+        let updates = {};
+        updates['/events/' + eventId + '/users/' + id] = true;
+        updates['/users/' + id + '/events/' + eventId] = true;
+        database.ref().update(updates);
       });
-      }
-    }).then(() => {
-      this.props.navigator.dismissModal({
-        animationType: 'slide-down',
-      });
+    }
+    this.props.navigator.dismissModal({
+      animationType: 'slide-down',
     });
   }
 

@@ -53,6 +53,10 @@ export default class VotePage extends Component {
     });
   }
 
+  componentWillUnmount() {
+    this.eventRef.off();
+  }
+
   onCheckLocations(id){
     const vote = this.state.locations.find((lo) => { return lo.id === id }).voter || [];
     const uid = auth.currentUser.uid;

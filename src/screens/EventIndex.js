@@ -36,7 +36,6 @@ export default class EventIndex extends Component {
     }
   }
 
-
   componentDidMount() {
     const userEvents = database.ref().child('users').child(auth.currentUser.uid).child('events');
     this.listenForItems(userEvents);
